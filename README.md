@@ -12,6 +12,8 @@ This project is the successor to
 [jquery-sessionTimeout](https://github.com/travishorn/jquery-sessionTimeout). I built this new
 version to remove the dependency on jQuery and jQuery UI.
 
+![Animated demonstration](samples/demo.gif)
+
 ## Installation
 
 First, download `dist/session-timeout.js`. Then, choose one of the following methods.
