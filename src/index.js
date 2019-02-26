@@ -39,7 +39,9 @@ export default (passedOptions) => {
     container.classList.add('sessionTimeout--hidden');
 
     const url = options.appendTimestamp ? `${options.keepAliveUrl}?time=${Date.now()}` : options.keepAliveUrl;
-    fetch(url, { method: options.keepAliveMethod });
+    const req = new XMLHttpRequest();
+    req.open(options.keepAliveMethod, url);
+    req.send();
 
     warnTimer = setTimeout(warn, options.warnAfter);
     clearTimeout(timeOutTimer);
