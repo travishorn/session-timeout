@@ -5,7 +5,7 @@ Warn users when their session is about to expire. Dependency-free.
 When this function is called (usually each time a page is loaded), a timer starts in the background.
 When the timer goes off, a warning is displayed to the user that their session is about to expire.
 The user has two options: Log out now or stay connected. If they choose to log out, they are brought
-to the log out page. If they choose to stay connected, a keep-alive URL is requested in the
+to your site's log out page. If they choose to stay connected, a keep-alive URL is requested in the
 background, the warning is hidden, and the timer resets.
 
 This project is the successor to
