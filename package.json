@@ -1,0 +1,26 @@
+{
+  "name": "session-timeout",
+  "version": "0.1.0",
+  "description": "Warn users when their session is about to expire. Dependency-free.",
+  "main": "dist/session-timeout.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "dev": "webpack --watch"
+  },
+  "keywords": [
+    "javascript",
+    "session",
+    "warning",
+    "ui",
+    "user interface"
+  ],
+  "author": "Travis Horn <travis@travishorn.com> (https://travishorn.com)",
+  "license": "MIT",
+  "devDependencies": {
+    "css-loader": "^2.1.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3"
+  }
+}
