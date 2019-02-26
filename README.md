@@ -16,9 +16,17 @@ version to remove the dependency on jQuery and jQuery UI.
 
 ## Installation
 
-First, download `dist/session-timeout.js`. Then, choose one of the following methods.
+### Method 1: CDN
 
-### Direct &lt;script&gt;
+Include the script on your page via UNPKG.
+
+```html
+<script src="https://unpkg.com/@travishorn/session-timeout"></script>
+```
+
+### Method 2: Download
+
+Download [dist/session-timeout.js](dist/session-timeout.js).
 
 Include it on your page.
 
@@ -26,15 +34,23 @@ Include it on your page.
 <script src="session-timeout.js"></script>
 ```
 
-### ES6 Module (using webpack or similar)
+### Method 3: ES6 Module using npm and webpack (or similar)
+
+Install via npm.
+
+```
+> npm install @travishorn/session-timeout
+```
+
+Include it in your scripts.
 
 ```javascript
-import sessionTimeout from './session-timeout';
+import sessionTimeout from '@travishorn/session-timeout';
 ```
 
 ## Usage
 
-Call it from JavaScript.
+Call it in JavaScript.
 
 ```javascript
 sessionTimeout();
