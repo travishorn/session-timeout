@@ -1,17 +1,17 @@
-import './index.css';
+import "./index.css";
 
-export default (passedOptions) => {
+export default passedOptions => {
   const defaults = {
     appendTimestamp: false,
-    keepAliveMethod: 'POST',
-    keepAliveUrl: '/keep-alive',
-    logOutBtnText: 'Log out now',
-    logOutUrl: '/log-out',
-    message: 'Your session is about to expire.',
-    stayConnectedBtnText: 'Stay connected',
+    keepAliveMethod: "POST",
+    keepAliveUrl: "/keep-alive",
+    logOutBtnText: "Log out now",
+    logOutUrl: "/log-out",
+    message: "Your session is about to expire.",
+    stayConnectedBtnText: "Stay connected",
     timeOutAfter: 1200000,
-    timeOutUrl: '/timed-out',
-    warnAfter: 900000,
+    timeOutUrl: "/timed-out",
+    warnAfter: 900000
   };
 
   const options = Object.assign(defaults, passedOptions);
@@ -19,26 +19,32 @@ export default (passedOptions) => {
   let warnTimer;
   let timeOutTimer;
 
-  const container = document.createElement('div');
-  const modal = document.createElement('div');
-  const content = document.createElement('div');
-  const buttons = document.createElement('div');
-  const logOutBtn = document.createElement('button');
-  const stayConnectedBtn = document.createElement('button');
+  const container = document.createElement("div");
+  const modal = document.createElement("div");
+  const content = document.createElement("div");
+  const buttons = document.createElement("div");
+  const logOutBtn = document.createElement("button");
+  const stayConnectedBtn = document.createElement("button");
 
   const warn = () => {
-    container.classList.remove('sessionTimeout--hidden');
+    container.classList.remove("sessionTimeout--hidden");
     clearTimeout(warnTimer);
   };
 
-  const timeOut = () => { window.location = options.timeOutUrl; };
+  const timeOut = () => {
+    window.location = options.timeOutUrl;
+  };
 
-  const logOut = () => { window.location = options.logOutUrl; };
+  const logOut = () => {
+    window.location = options.logOutUrl;
+  };
 
   const stayConnected = () => {
-    container.classList.add('sessionTimeout--hidden');
+    container.classList.add("sessionTimeout--hidden");
 
-    const url = options.appendTimestamp ? `${options.keepAliveUrl}?time=${Date.now()}` : options.keepAliveUrl;
+    const url = options.appendTimestamp
+      ? `${options.keepAliveUrl}?time=${Date.now()}`
+      : options.keepAliveUrl;
     fetch(url, { method: options.keepAliveMethod });
 
     warnTimer = setTimeout(warn, options.warnAfter);
@@ -46,15 +52,21 @@ export default (passedOptions) => {
     timeOutTimer = setTimeout(timeOut, options.timeOutAfter);
   };
 
-  logOutBtn.addEventListener('click', logOut);
-  stayConnectedBtn.addEventListener('click', stayConnected);
+  logOutBtn.addEventListener("click", logOut);
+  stayConnectedBtn.addEventListener("click", stayConnected);
 
-  container.classList.add('sessionTimeout', 'sessionTimeout--hidden');
-  modal.classList.add('sessionTimeout-modal');
-  content.classList.add('sessionTimeout-content');
-  buttons.classList.add('sessionTimeout-buttons');
-  logOutBtn.classList.add('sessionTimeout-btn', 'sessionTimeout-btn--secondary');
-  stayConnectedBtn.classList.add('sessionTimeout-btn', 'sessionTimeout-btn--primary');
+  container.classList.add("sessionTimeout", "sessionTimeout--hidden");
+  modal.classList.add("sessionTimeout-modal");
+  content.classList.add("sessionTimeout-content");
+  buttons.classList.add("sessionTimeout-buttons");
+  logOutBtn.classList.add(
+    "sessionTimeout-btn",
+    "sessionTimeout-btn--secondary"
+  );
+  stayConnectedBtn.classList.add(
+    "sessionTimeout-btn",
+    "sessionTimeout-btn--primary"
+  );
 
   content.innerText = options.message;
   logOutBtn.innerText = options.logOutBtnText;

@@ -1,29 +1,26 @@
-const path = require('path');
+const path = require("path");
 
 module.exports = {
-  entry: './src/index.js',
+  entry: "./src/index.js",
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'session-timeout.js',
-    library: 'sessionTimeout',
-    libraryTarget: 'umd',
-    libraryExport: 'default',
+    path: path.resolve(__dirname, "dist"),
+    filename: "session-timeout.js",
+    library: "sessionTimeout",
+    libraryTarget: "umd",
+    libraryExport: "default"
   },
-  mode: 'production',
+  mode: "production",
   module: {
     rules: [
       {
         test: /\.css$/,
-        use: [
-          { loader: 'style-loader' },
-          { loader: 'css-loader' },
-        ],
+        use: [{ loader: "style-loader" }, { loader: "css-loader" }]
       },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
-      },
-    ],
-  },
+        loader: "babel-loader"
+      }
+    ]
+  }
 };
