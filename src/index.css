@@ -13,8 +13,18 @@
 .sessionTimeout-modal {
   background-color: #FFFFFF;
   margin: 10% auto;
-  padding: 1rem;
+  padding: 0.2rem;
   width: 50%;
+}
+
+.sessionTimeout-title {
+  font-family: Helvetica, Arial, sans-serif;
+  background-color: #DEDEDE;
+  font-weight: bold;
+  padding: .4em 1em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sessionTimeout-content {

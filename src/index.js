@@ -11,6 +11,7 @@ export default passedOptions => {
     stayConnectedBtnText: "Stay connected",
     timeOutAfter: 1200000,
     timeOutUrl: "/timed-out",
+    titleText: "Session Timetout",
     warnAfter: 900000
   };
 
@@ -22,6 +23,7 @@ export default passedOptions => {
   const container = document.createElement("div");
   const modal = document.createElement("div");
   const content = document.createElement("div");
+  const title = document.createElement("div");
   const buttons = document.createElement("div");
   const logOutBtn = document.createElement("button");
   const stayConnectedBtn = document.createElement("button");
@@ -59,6 +61,7 @@ export default passedOptions => {
 
   container.classList.add("sessionTimeout", "sessionTimeout--hidden");
   modal.classList.add("sessionTimeout-modal");
+  title.classList.add("sessionTimeout-title");
   content.classList.add("sessionTimeout-content");
   buttons.classList.add("sessionTimeout-buttons");
   logOutBtn.classList.add(
@@ -70,10 +73,12 @@ export default passedOptions => {
     "sessionTimeout-btn--primary"
   );
 
+  title.innerText = options.titleText;
   content.innerText = options.message;
   logOutBtn.innerText = options.logOutBtnText;
   stayConnectedBtn.innerText = options.stayConnectedBtnText;
 
+  modal.appendChild(title);
   modal.appendChild(content);
   modal.appendChild(buttons);
   buttons.appendChild(logOutBtn);
