@@ -101,6 +101,12 @@ When the user clicks the "Log out now" button, their browser is directed to this
 
 Default: `/log-out`
 
+### title
+
+The text displayed at the top of the dialog.
+
+Default: `Session timeout`
+
 ### message
 
 The message to display when warning the user of inactivity.
