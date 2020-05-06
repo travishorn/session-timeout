@@ -105,7 +105,7 @@ Default: `/log-out`
 
 The text displayed at the top of the dialog.
 
-Default: `Session timeout`
+Default: `Session Timeout`
 
 ### message
 
