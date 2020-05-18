@@ -1,6 +1,6 @@
 {
   "name": "@travishorn/session-timeout",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Warn users when their session is about to expire. Dependency-free.",
   "main": "dist/session-timeout.js",
   "scripts": {

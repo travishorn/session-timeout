@@ -101,7 +101,7 @@ When the user clicks the "Log out now" button, their browser is directed to this
 
 Default: `/log-out`
 
-### title
+### titleText
 
 The text displayed at the top of the dialog.
 
