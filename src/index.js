@@ -11,7 +11,7 @@ export default passedOptions => {
     stayConnectedBtnText: "Stay connected",
     timeOutAfter: 1200000,
     timeOutUrl: "/timed-out",
-    titleText: "Session Timetout",
+    titleText: "Session Timeout",
     warnAfter: 900000
   };
 
