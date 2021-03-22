@@ -40,6 +40,11 @@ export default passedOptions => {
   const logOut = () => {
     window.location = options.logOutUrl;
   };
+  
+  const resetTimers = () => {
+    clearTimeout(warnTimer);
+    stayConnected();
+  };
 
   const stayConnected = () => {
     container.classList.add("sessionTimeout--hidden");
@@ -88,4 +93,9 @@ export default passedOptions => {
 
   warnTimer = setTimeout(warn, options.warnAfter);
   timeOutTimer = setTimeout(timeOut, options.timeOutAfter);
+  
+  let events = ['click'];	//keypress, mousedown, mousemove, scroll, touchstart
+  events.forEach(function (name) {
+    document.addEventListener(name, resetTimers, true);
+  });
 };
