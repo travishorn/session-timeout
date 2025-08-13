@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>session-timeout Demo</title>
+  </head>
+  <body>
+    <h1>session-timeout Demo</h1>
+    <p>
+      This is a demo of the session-timeout library. It will show a dialog after
+      5 seconds and redirect the user after 20 seconds.
+    </p>
+
+    <script type="module">
+      import sessionTimeout from "../src/index.js";
+
+      sessionTimeout({
+        warnAt: 5 * 1000, // 5 seconds
+        timeoutAt: 20 * 1000, // 20 seconds
+        message: "Your session is about to expire. Would you like to continue?",
+        continueText: "Continue Session",
+        logoutText: "Log Out",
+        onTimeout: () => {
+          alert(
+            "Session timeout occurred! In a real app, you would be redirected.",
+          );
+        },
+        onLogout: () => {
+          alert("User logged out! In a real app, you would be redirected.");
+        },
+      });
+    </script>
+  </body>
+</html>

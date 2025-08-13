@@ -2,142 +2,165 @@
 
 Warn users when their session is about to expire. Dependency-free.
 
-When this function is called (usually each time a page is loaded), a timer starts in the background.
-When the timer goes off, a warning is displayed to the user that their session is about to expire.
-The user has two options: Log out now or stay connected. If they choose to log out, they are brought
-to your site's log out page. If they choose to stay connected, a keep-alive URL is requested in the
-background, the warning is hidden, and the timer resets.
+When this function is called (usually each time a page is loaded), two timers
+start in the background:
 
-This project is the successor to
-[jquery-sessionTimeout](https://github.com/travishorn/jquery-sessionTimeout). I built this new
-version to remove the dependency on jQuery and jQuery UI.
+1. A warning timer that shows a dialog when the session is about to expire
+2. A timeout timer that calls the onTimeout callback when the session expires
 
-![Animated demonstration](samples/demo.gif)
+The user has two options when the warning appears: Continue the session or log
+out. If they choose to continue, the timers reset and a keep-alive request is
+made. If they choose to log out or don't respond, the onTimeout callback will be
+called.
+
+Timers are synchronized across multiple tabs using Local Storage.
 
 ## Installation
 
-### Method 1: CDN
-
-Include the script on your page via UNPKG.
-
-```html
-<script src="https://unpkg.com/@travishorn/session-timeout"></script>
-```
-
-### Method 2: Download
-
-Download [dist/session-timeout.js](dist/session-timeout.js).
-
-Include it on your page.
-
-```html
-<script src="session-timeout.js"></script>
-```
-
-### Method 3: ES6 Module using npm and webpack (or similar)
+### Method 1: npm
 
 Install via npm.
 
-```
-> npm install @travishorn/session-timeout
+```bash
+npm install @travishorn/session-timeout
 ```
 
-Include it in your scripts.
+Import the library.
 
 ```javascript
-import sessionTimeout from '@travishorn/session-timeout';
+import sessionTimeout from "@travishorn/session-timeout";
+```
+
+### Method 2: CDN
+
+Import the library from jsDelivr.
+
+```html
+<script type="module">
+  import sessionTimeout from "https://cdn.jsdelivr.net/npm/@travishorn/session-timeout";
+</script>
+```
+
+### Method 3: Download
+
+Download [src/session-timeout.js](src/session-timeout.js).
+
+Import the library from the downloaded file.
+
+```html
+<script type="module">
+  import sessionTimeout from "./session-timeout.js";
+</script>
 ```
 
 ## Usage
 
-Call it in JavaScript.
+Call it in your scripts.
 
 ```javascript
 sessionTimeout();
 ```
 
-Provide options as an object.
+Or, optionally provide options as an object.
 
 ```javascript
 sessionTimeout({
-  warnAfter: 60000,
-  message: 'Are you still there?',
+  continueText: "Continue Session",
+  logoutText: "Log Out",
+  message: "Your session is about to expire.",
+  onContinue: () => {
+    // Called when user clicks continue (defaults to making keep-alive request)
+  },
+  onLogout: () => {
+    // Called when user clicks logout
+  },
+  onTimeout: () => {
+    // Called when session times out (defaults to redirecting to /timed-out)
+  },
+  timeoutAt: 20 * 60 * 1000, // Call onTimeout after 20 minutes
+  warnAt: 15 * 60 * 1000, // Show warning after 15 minutes
 });
 ```
 
 ## Options
 
-### appendTimestamp
+| Option         | Type     | Default                                        | Description                                            |
+| -------------- | -------- | ---------------------------------------------- | ------------------------------------------------------ |
+| `continueText` | string   | `"Continue Session"`                           | Text for the continue button                           |
+| `logoutText`   | string   | `"Log Out"`                                    | Text for the logout button                             |
+| `message`      | string   | `"Your session is about to expire."`           | Message shown in the warning dialog                    |
+| `onContinue`   | function | `() => fetch('/keep-alive?time=${timestamp}')` | Callback function called when user clicks continue     |
+| `onLogout`     | function | `undefined`                                    | Callback function called when user clicks logout       |
+| `onTimeout`    | function | `() => window.location.href = "/timed-out"`    | Callback function called when session times out        |
+| `timeoutAt`    | number   | `20 * 60 * 1000` (20 minutes)                  | Time in milliseconds before calling onTimeout          |
+| `warnAt`       | number   | `15 * 60 * 1000` (15 minutes)                  | Time in milliseconds before showing the warning dialog |
 
-If `true`, appends the a timestamp parameter to the end of the keep-alive URL with each request.
-This can prevent caching issues by guaranteeing the URL is unique.
+## Styling
 
-Default: `false`
+The warning dialog can be customized using CSS. The dialog element has the class
+`session-timeout-dialog` which you can target in your stylesheets.
 
-Example URL: `/keep-alive?time=1551203965297`
+```css
+.session-timeout-dialog {
+  /* Customize the dialog appearance */
+}
+.session-timeout-dialog p {
+  /* Style the message text */
+}
+.session-timeout-dialog .buttons {
+  /* Style the button container */
+}
+.session-timeout-dialog button {
+  /* Style the buttons */
+}
+.session-timeout-dialog button[data-action="continue"] {
+  /* Style the continue button */
+}
+.session-timeout-dialog button[data-action="logout"] {
+  /* Style the logout button */
+}
+```
 
-### keepAliveMethod
+## API
 
-The HTTP method to use when making the keep-alive request.
+The `sessionTimeout()` function returns an object with the following methods:
 
-Default: `POST`
+| Method      | Description                               |
+| ----------- | ----------------------------------------- |
+| `close()`   | Manually close the warning dialog         |
+| `destroy()` | Clears all timers and removes the dialog  |
+| `reset()`   | Closes the dialog and restarts the timers |
+| `show()`    | Manually show the warning dialog          |
 
-### keepAliveUrl
+For example, if an external event extended the user's session (like a `fetch()`
+call), you can reset the timers:
 
-When the user clicks the "Stay connected" button, this URL is requested in the background to keep
-their session alive.
+```javascript
+const session = sessionTimeout();
 
-Default: `/keep-alive`
+// When session is extended
+session.reset();
+```
 
-### logOutBtnText
+## License
 
-The text on the log out button.
+The MIT License (MIT)
 
-Default: `Log out now`
+Copyright © 2025 Travis Horn
 
-### logOutUrl
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the “Software”), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
 
-When the user clicks the "Log out now" button, their browser is directed to this URL.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-Default: `/log-out`
-
-### titleText
-
-The text displayed at the top of the dialog.
-
-Default: `Session Timeout`
-
-### message
-
-The message to display when warning the user of inactivity.
-
-Default: `Your session is about to expire.`
-
-### stayConnectedBtnText
-
-The text on the "stay connected" button.
-
-Default: `Stay connected`
-
-### timeOutAfter
-
-The amount of time, in milliseconds, to wait until automatically timing out the user and redirecting
-their client to the time-out URL. You will usually want to set this to the same amount of time your
-server keeps sessions alive. This timer gets reset if the users clicks the "stay connected" button
-on the warning dialog.
-
-Default: `1200000` (20 minutes)
-
-### timeOutUrl
-
-Once the time out period has elapsed, the user's browser will be directed to this URL.
-
-Default: `/timed-out`
-
-### warnAfter
-
-The amount of time, in milliseconds, to wait until displaying a warning to the user. If the
-user clicks the "stay connected" button, the warning disappears, and the timer is reset. The warning
-will re-appear after the same amount of time after reset.
-
-Default: `900000` (15 minutes)
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
