@@ -284,6 +284,83 @@ describe("sessionTimeout", () => {
     });
   });
 
+  describe("default logout behavior", () => {
+    it("should redirect to /logout when user clicks logout with default onLogout", () => {
+      const mockLocation = { href: "" };
+      Object.defineProperty(window, "location", {
+        value: mockLocation,
+        writable: true,
+      });
+
+      const session = sessionTimeout({ warnAt: 100 });
+
+      // Advance time to show dialog
+      vi.advanceTimersByTime(150);
+
+      const dialog = document.querySelector("dialog");
+      const logoutBtn = dialog.querySelector('[data-action="logout"]');
+
+      logoutBtn.click();
+
+      // Should redirect to /logout
+      expect(mockLocation.href).toBe("/logout");
+
+      session.destroy();
+    });
+
+    it("should not redirect when custom onLogout is provided", () => {
+      const mockLocation = { href: "" };
+      Object.defineProperty(window, "location", {
+        value: mockLocation,
+        writable: true,
+      });
+
+      const customOnLogout = vi.fn();
+
+      const session = sessionTimeout({
+        warnAt: 100,
+        onLogout: customOnLogout,
+      });
+
+      // Advance time to show dialog
+      vi.advanceTimersByTime(150);
+
+      const dialog = document.querySelector("dialog");
+      const logoutBtn = dialog.querySelector('[data-action="logout"]');
+
+      logoutBtn.click();
+
+      // Should call custom onLogout
+      expect(customOnLogout).toHaveBeenCalledTimes(1);
+      // Should not redirect
+      expect(mockLocation.href).toBe("");
+
+      session.destroy();
+    });
+
+    it("should handle missing window.location gracefully", () => {
+      // Temporarily remove window.location
+      const originalLocation = window.location;
+      delete window.location;
+
+      const session = sessionTimeout({ warnAt: 100 });
+
+      // Advance time to show dialog
+      vi.advanceTimersByTime(150);
+
+      const dialog = document.querySelector("dialog");
+      const logoutBtn = dialog.querySelector('[data-action="logout"]');
+
+      // Should not throw when window.location is not available
+      expect(() => logoutBtn.click()).not.toThrow();
+
+      // Restore window.location
+      window.location = originalLocation;
+
+      session.destroy();
+    });
+  });
+
   describe("default continue behavior", () => {
     it("should make keep-alive request when user clicks continue with default onContinue", () => {
       const session = sessionTimeout({ warnAt: 100 });

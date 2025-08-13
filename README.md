@@ -90,7 +90,7 @@ sessionTimeout({
 | `logoutText`   | string   | `"Log Out"`                                    | Text for the logout button                             |
 | `message`      | string   | `"Your session is about to expire."`           | Message shown in the warning dialog                    |
 | `onContinue`   | function | `() => fetch('/keep-alive?time=${timestamp}')` | Callback function called when user clicks continue     |
-| `onLogout`     | function | `undefined`                                    | Callback function called when user clicks logout       |
+| `onLogout`     | function | `() => window.location.href = "/logout"`       | Callback function called when user clicks logout       |
 | `onTimeout`    | function | `() => window.location.href = "/timed-out"`    | Callback function called when session times out        |
 | `timeoutAt`    | number   | `20 * 60 * 1000` (20 minutes)                  | Time in milliseconds before calling onTimeout          |
 | `warnAt`       | number   | `15 * 60 * 1000` (15 minutes)                  | Time in milliseconds before showing the warning dialog |

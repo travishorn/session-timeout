@@ -18,7 +18,12 @@ export default function sessionTimeout(options = {}) {
     message = "Your session is about to expire.",
     continueText = "Continue Session",
     logoutText = "Log Out",
-    onLogout,
+    onLogout = () => {
+      // Default logout handler - redirect to /logout
+      if (typeof window !== "undefined" && window.location) {
+        window.location.href = "/logout";
+      }
+    },
   } = options;
 
   let warnTimeoutId = null;
