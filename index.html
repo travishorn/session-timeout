@@ -67572,10 +67572,13 @@
     <div class="jvectormap-tip"></div>
 
     <script type="module">
-      import sessionTimeout from "https://cdn.jsdelivr.net/npm/@travishorn/session-timeout@3.0.1/+esm";
+      import sessionTimeout from "https://cdn.jsdelivr.net/npm/@travishorn/session-timeout@3.1.0/+esm";
       sessionTimeout({
         warnAt: 3000,
         onTimeout: () => {
+          window.location = "/logged-out.html";
+        },
+        onLogout: () => {
           window.location = "/logged-out.html";
         },
       });
