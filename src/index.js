@@ -85,9 +85,9 @@ export default function sessionTimeout(options = {}) {
       dialog = createDialog();
       document.body.appendChild(dialog);
     }
-    // Check if show method exists (for environments like jsdom that don't support it)
-    if (typeof dialog.show === "function") {
-      dialog.show();
+    // Check if showModal method exists (for environments like jsdom that don't support it)
+    if (typeof dialog.showModal === "function") {
+      dialog.showModal();
     }
   };
 
