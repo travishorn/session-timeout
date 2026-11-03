@@ -78,7 +78,7 @@ export default function sessionTimeout(options = {}) {
       if (typeof dialog.close === "function") {
         dialog.close();
       }
-      if (document.body.contains(dialog)) {
+      if (document.body?.contains(dialog)) {
         document.body.removeChild(dialog);
       }
       dialog = null;
@@ -86,6 +86,10 @@ export default function sessionTimeout(options = {}) {
   };
 
   const showDialog = () => {
+    if (typeof document === "undefined" || !document.body) {
+      return;
+    }
+
     if (!dialog) {
       dialog = createDialog();
       document.body.appendChild(dialog);
@@ -227,17 +231,13 @@ export default function sessionTimeout(options = {}) {
       const remainingWarnTime = Math.max(0, warnAt - timeSinceReset);
       const remainingTimeoutTime = Math.max(0, timeoutAt - timeSinceReset);
 
-      if (remainingWarnTime > 0) {
-        warnTimeoutId = setTimeout(() => {
-          showDialog();
-        }, remainingWarnTime);
-      }
+      warnTimeoutId = setTimeout(() => {
+        showDialog();
+      }, remainingWarnTime);
 
-      if (remainingTimeoutTime > 0) {
-        redirectTimeoutId = setTimeout(() => {
-          handleTimeout();
-        }, remainingTimeoutTime);
-      }
+      redirectTimeoutId = setTimeout(() => {
+        handleTimeout();
+      }, remainingTimeoutTime);
     } else {
       // Start fresh timers
       startTimers();

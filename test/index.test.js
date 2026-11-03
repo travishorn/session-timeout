@@ -602,7 +602,8 @@ describe("sessionTimeout", () => {
       const originalAddEventListener = window.addEventListener;
       delete window.addEventListener;
 
-      expect(() => sessionTimeout()).not.toThrow();
+      const session = sessionTimeout();
+      expect(() => session.destroy()).not.toThrow();
 
       // Restore addEventListener
       window.addEventListener = originalAddEventListener;
@@ -888,27 +889,156 @@ describe("sessionTimeout", () => {
   });
 
   describe("error handling", () => {
+    it("should handle absent stored reset times and callbacks", () => {
+      vi.spyOn(localStorageMock, "getItem").mockReturnValue(null);
+      const session = sessionTimeout({
+        warnAt: 100,
+        timeoutAt: 200,
+        onContinue: null,
+        onLogout: null,
+        onTimeout: null,
+      });
+
+      vi.advanceTimersByTime(150);
+      const dialog = document.querySelector("dialog");
+      const continueButton = dialog.querySelector('[data-action="continue"]');
+      continueButton.click();
+
+      vi.advanceTimersByTime(100);
+      const restartedDialog = document.querySelector("dialog");
+      const logoutButton = restartedDialog.querySelector(
+        '[data-action="logout"]',
+      );
+      logoutButton.click();
+      vi.advanceTimersByTime(100);
+
+      expect(() => session.destroy()).not.toThrow();
+    });
+
+    it("should not remove a dialog that is not in document.body", () => {
+      const continueButton = { addEventListener: vi.fn() };
+      const logoutButton = { addEventListener: vi.fn() };
+      const dialog = {
+        setAttribute: vi.fn(),
+        classList: { add: vi.fn() },
+        querySelector: vi
+          .fn()
+          .mockReturnValueOnce(continueButton)
+          .mockReturnValueOnce(logoutButton),
+        showModal: vi.fn(),
+        close: vi.fn(),
+      };
+      const mockDocument = {
+        createElement: vi.fn().mockReturnValue(dialog),
+        body: {
+          appendChild: vi.fn(),
+          contains: vi.fn().mockReturnValue(false),
+          removeChild: vi.fn(),
+        },
+      };
+
+      vi.stubGlobal("document", mockDocument);
+      try {
+        const session = sessionTimeout({ warnAt: 1000 });
+        session.show();
+        session.show();
+        expect(dialog.showModal).toHaveBeenCalledTimes(2);
+
+        session.close();
+        expect(mockDocument.body.removeChild).not.toHaveBeenCalled();
+        session.destroy();
+      } finally {
+        vi.unstubAllGlobals();
+      }
+    });
+
+    it("should ignore storage resets that are older than the timeout window", () => {
+      const session = sessionTimeout({ warnAt: 200, timeoutAt: 100 });
+      const storageListener = addEventListenerMock.mock.calls.find(
+        (call) => call[0] === "storage",
+      )[1];
+
+      storageListener({
+        key: "session-timeout-last-reset",
+        newValue: (Date.now() - 150).toString(),
+      });
+
+      expect(document.querySelector("dialog")).toBeFalsy();
+      session.destroy();
+    });
+
+    it("should use dialog methods when available", () => {
+      const continueButton = { addEventListener: vi.fn() };
+      const logoutButton = { addEventListener: vi.fn() };
+      const dialog = {
+        setAttribute: vi.fn(),
+        classList: { add: vi.fn() },
+        querySelector: vi
+          .fn()
+          .mockReturnValueOnce(continueButton)
+          .mockReturnValueOnce(logoutButton),
+        showModal: vi.fn(),
+        close: vi.fn(),
+      };
+      const mockDocument = {
+        createElement: vi.fn().mockReturnValue(dialog),
+        body: {
+          appendChild: vi.fn(),
+          contains: vi.fn().mockReturnValue(true),
+          removeChild: vi.fn(),
+        },
+      };
+
+      vi.stubGlobal("document", mockDocument);
+      try {
+        const session = sessionTimeout({ warnAt: 1000 });
+
+        session.show();
+        expect(dialog.showModal).toHaveBeenCalledOnce();
+
+        session.close();
+        expect(dialog.close).toHaveBeenCalledOnce();
+        expect(mockDocument.body.removeChild).toHaveBeenCalledWith(dialog);
+
+        session.destroy();
+      } finally {
+        vi.unstubAllGlobals();
+      }
+    });
+
+    it("should start fresh timers when the stored reset is older than timeoutAt", () => {
+      vi.spyOn(localStorageMock, "getItem").mockReturnValue(
+        (Date.now() - 150).toString(),
+      );
+      const onTimeout = vi.fn();
+
+      const session = sessionTimeout({
+        warnAt: 200,
+        timeoutAt: 100,
+        onTimeout,
+      });
+
+      vi.advanceTimersByTime(100);
+      expect(onTimeout).toHaveBeenCalledOnce();
+
+      session.destroy();
+    });
+
     it("should handle missing document.body gracefully", () => {
       // Create a mock document without body
       const mockDocument = {
-        createElement: vi.fn().mockReturnValue({
-          setAttribute: vi.fn(),
-          innerHTML: "",
-          querySelector: vi.fn().mockReturnValue({
-            addEventListener: vi.fn(),
-          }),
-        }),
         body: null,
       };
 
-      // Temporarily replace global document
-      const originalDocument = globalThis.document;
-      globalThis.document = mockDocument;
+      vi.stubGlobal("document", mockDocument);
+      try {
+        const session = sessionTimeout({ warnAt: 100 });
 
-      expect(() => sessionTimeout()).not.toThrow();
-
-      // Restore original document
-      globalThis.document = originalDocument;
+        expect(() => vi.advanceTimersByTime(150)).not.toThrow();
+        expect(() => session.destroy()).not.toThrow();
+      } finally {
+        vi.unstubAllGlobals();
+      }
     });
 
     it("should handle dialog creation failure gracefully", () => {
